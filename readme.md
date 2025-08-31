@@ -2,6 +2,8 @@
 
 A Python script for safely rotating Kubernetes secrets with zero-downtime workload restarts and automatic rollback on failures.
 
+> ⚠️ **Note**: This script is a part of WishLink Assignment and is not production-ready. It requires additional testing, error handling, and security hardening and many more before use in production environments.
+
 ## Overview
 
 This tool automatically discovers all Deployments and StatefulSets that reference a specific secret, updates the secret value, and performs rolling restarts with verification to ensure the new secret is properly propagated to all running pods.
@@ -32,18 +34,12 @@ This tool automatically discovers all Deployments and StatefulSets that referenc
    - Configures rolling update strategy (40% maxSurge, 0% maxUnavailable)
    - Triggers rollout restart
    - Waits for successful completion with timeout and retries
-4. **Verification**: Verifies that the new secret value has propagated to running pods
+4. **Verification**: Verifies that the new secret value has propagated to running pods (kept check on single pod, make changes to script to add check on more pods)
 5. **Rollback**: Automatically rolls back on any failure
 
 ## Error Handling
 
-Currently it is not in good condition, working on it
-
-## Limitations
-
-- Only supports Deployments and StatefulSets (can be extended for other workload types)
-- Verification checks a sample pod rather than all pods (for performance in large clusters)
-- Requires kubectl CLI tool
+Currently it is not in good condition, working on it...
 
 ## Security Considerations
 
@@ -54,3 +50,7 @@ Currently it is not in good condition, working on it
 ## License
 
 MIT License - feel free to use and modify for your needs.
+
+
+
+
