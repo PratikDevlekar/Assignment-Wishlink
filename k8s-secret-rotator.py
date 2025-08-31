@@ -8,7 +8,6 @@ import base64
 import hashlib
 
 # helper function : helps me run cmds on bin/bash
-#DONE
 def run(cmd,input=None):
     result = subprocess.run(
         cmd, shell=True,
@@ -27,11 +26,12 @@ NAMESPACE = os.environ.get("NAMESPACE", "default")
 NEW_SECRET_VALUE = os.environ.get("NEW_SECRET_VALUE")  
 SECRET_KEY = os.environ.get("SECRET_KEY")
 file_path_default = True
+
 # For Testing Purpose 
-SECRET_NAME = "my-secret"
-NAMESPACE = "test-space"
-NEW_SECRET_VALUE = "Testing-new-password"
-SECRET_KEY = "password"
+# SECRET_NAME = "my-secret"
+# NAMESPACE = "test-space"
+# NEW_SECRET_VALUE = "Testing-new-password"
+# SECRET_KEY = "password"
 
 # Taking input [STDIN] required field
 if not SECRET_NAME:
@@ -62,10 +62,10 @@ if not SECRET_KEY:
     print("ERROR: SECRET_KEY environment variable is required")
     sys.exit(1)
 FILE_PATH_ON_POD = "/etc/secrets/"+ str(SECRET_KEY)
-# print(FILE_PATH_ON_POD)
+
 # Discover workloads of a specific kind (Deployment/StatefulSet) that reference the target secret
 # Checks env vars, envFrom, and volume mounts for secret references
-# DONE 
+
 def workload(secret_name, namespace, kind, workloads):
     dep_cmd = f"kubectl get {kind.lower()}s -n {namespace} -o json"
     deps = json.loads(run(dep_cmd))
@@ -102,7 +102,7 @@ def get_workloads(secret_name, namespace):
 
 # Update the Kubernetes secret with new value 
 # Encodes the new value in base64 and applies via kubectl
-#DONE
+
 def patch_secret(secret_name, namespace, new_value, key):
     cmd_get = f"kubectl get secret {secret_name} -n {namespace} -o json"
     secret_json_str = run(cmd_get)
@@ -117,7 +117,7 @@ def patch_secret(secret_name, namespace, new_value, key):
 
 # Configure rolling update strategy with specified surge and unavailable parameters
 # Ensures zero-downtime deployment by allowing controlled pod replacement
-#DONE
+
 def ensure_max_surge(kind, name, namespace, surge="40%", unavailable="0"):
     patch = {
         "spec": {
@@ -137,7 +137,7 @@ def ensure_max_surge(kind, name, namespace, surge="40%", unavailable="0"):
 
 # Restart workload and wait for successful rollout with exponential backoff retry logic
 # Triggers rollback on failure and verifies post-rollout secret propagation
-#DONE
+
 def rollout_workload(kind, name, namespace):
     rollout_cmd = f"kubectl rollout restart {kind.lower()}/{name} -n {namespace}"
     run(rollout_cmd)
@@ -168,7 +168,7 @@ def rollout_workload(kind, name, namespace):
 
 # Rollback workload to previous revision in case of deployment failure
 # Uses kubectl rollout undo to restore previous working state
-#Done
+
 def rollback_workload(kind, name, namespace):
     print(f"Rolling back {kind}/{name}...")
     rollback_cmd = f"kubectl rollout undo {kind.lower()}/{name} -n {namespace}"
@@ -177,7 +177,7 @@ def rollback_workload(kind, name, namespace):
 
 # Get list of pod names for a given workload using label selectors
 # Extracts matchLabels from workload spec and queries pods with those labels
-#Done
+
 def get_pod_names(kind, name, namespace):
     cmd = f"kubectl get {kind.lower()}/{name} -n {namespace} -o json"
     data = json.loads(run(cmd))
@@ -192,7 +192,7 @@ def get_pod_names(kind, name, namespace):
 
 # Extract container names from workload specification
 # Returns list of container names defined in the pod template
-#Done
+
 def get_containers(kind, name, namespace):
     cmd = f"kubectl get {kind.lower()}/{name} -n {namespace} -o json"
     data = json.loads(run(cmd))
@@ -200,7 +200,7 @@ def get_containers(kind, name, namespace):
 
 # Verify that the new secret value has been propagated to running pods
 # Checks both environment variables and mounted files using hash comparison
-#Done
+
 def verify_post_rollout(kind, name, namespace):
     pods = get_pod_names(kind, name, namespace)
     containers = get_containers(kind, name, namespace)
